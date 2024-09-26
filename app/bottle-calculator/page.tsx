@@ -7,12 +7,15 @@ import { Loader } from "lucide-react";
 interface PriceList {
     piece: {
         name: string;
+        quantity: number;
         price: number;
         pack: {
             name: string;
+            quantity: number;
             price: number;
             box: {
                 name: string;
+                quantity: number;
                 price: number;
             };
         };
@@ -29,13 +32,13 @@ const BottleCalculator: React.FC = () => {
     useEffect(() => {
         const fetchPriceList = async () => {
             try {
-                const response = await fetch('/api/pricelist'); 
+                const response = await fetch('/api/pricelist');
                 if (!response.ok) {
                     throw new Error('Failed to fetch price list');
                 }
                 const data = await response.json();
                 setPriceList(data.pricelist[0]);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
                 setError("Failed to load price list. Please try again later.");
             }
@@ -67,7 +70,7 @@ const BottleCalculator: React.FC = () => {
             priceList.piece.pack.price,
             priceList.piece.pack.box.price,
         ];
-        const pieces = [1, 12, 120]; 
+        const pieces = [1, 12, 120];
 
         try {
             const response = await fetch('/api/calculate', {
@@ -110,6 +113,7 @@ const BottleCalculator: React.FC = () => {
                             <li>{priceList.piece.name}: €{priceList.piece.price.toFixed(2)}</li>
                             <li>{priceList.piece.pack.name}: €{priceList.piece.pack.price.toFixed(2)}</li>
                             <li>{priceList.piece.pack.box.name}: €{priceList.piece.pack.box.price.toFixed(2)}</li>
+                           
                         </ul>
                     </div>
                 )}
