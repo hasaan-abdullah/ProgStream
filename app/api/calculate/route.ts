@@ -1,5 +1,3 @@
-// app/api/calculate/route.ts
-
 import { NextResponse } from 'next/server';
 
 type CalculateRequestBody = {
@@ -8,55 +6,30 @@ type CalculateRequestBody = {
   pieces: number[];
 };
 
-type CalculateResponse = {
-  bottles: number;
-  packs: number;
-  boxes: number;
-  price: number;
-};
-
-export async function POST(request: Request) {
+export const POST = async (request: Request) => {
   const { requiredBottles, prices, pieces }: CalculateRequestBody = await request.json();
 
-  // Call the calculation function
-  const result = calculate(requiredBottles, prices, pieces);
-  return NextResponse.json(result);
-}
+  const result = { boxes: 0, packs: 0, bottles: 0 };
+  let remainingBottles = requiredBottles;
 
-function calculate(requiredBottles: number, prices: number[], pieces: number[]): CalculateResponse {
-  const bottlesPrice = prices[0];
-  const packsPrice = prices[1];
-  const boxPrice = prices[2];
-
-  const bottlesInPack = pieces[1];
-  const bottlesInBox = pieces[2];
-
-  let bottles = 0;
-  let packs = 0;
-  let boxes = 0;
-
-  // Calculate the number of boxes needed
-  if (requiredBottles >= bottlesInBox) {
-    boxes = Math.floor(requiredBottles / bottlesInBox);
-    requiredBottles -= boxes * bottlesInBox;
+  // First calculate the number of boxes
+  if (remainingBottles >= pieces[2]) {
+    result.boxes = Math.floor(remainingBottles / pieces[2]);
+    remainingBottles %= pieces[2];
   }
 
-  // Calculate the number of packs needed
-  if (requiredBottles >= bottlesInPack) {
-    packs = Math.floor(requiredBottles / bottlesInPack);
-    requiredBottles -= packs * bottlesInPack;
+  // Then calculate the number of packs
+  if (remainingBottles >= pieces[1]) {
+    result.packs = Math.floor(remainingBottles / pieces[1]);
+    remainingBottles %= pieces[1];
   }
 
-  // Calculate the remaining bottles needed
-  bottles = requiredBottles;
+  // Finally, the remaining bottles
+  result.bottles = remainingBottles;
 
-  // Calculate total price
-  const totalPrice = bottles * bottlesPrice + packs * packsPrice + boxes * boxPrice;
+  // Calculate the total price
+  const totalPrice =
+    result.boxes * prices[2] + result.packs * prices[1] + result.bottles * prices[0];
 
-  return {
-    bottles,
-    packs,
-    boxes,
-    price: totalPrice,
-  };
-}
+  return NextResponse.json({ ...result, price: totalPrice });
+};
