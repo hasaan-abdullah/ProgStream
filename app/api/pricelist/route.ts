@@ -5,13 +5,16 @@ export async function GET() {
     pricelist: [
       {
         piece: {
-          name: " 1 Bottle Price",
+          name: "One Bottle",
+          quantity:"1",
           price: 2.3,
           pack: {
-            name: "12-pack",
+            name: "A Pack contains 12 Bottles",
+            quantity:"12",
             price: 25,
             box: {
-              name: "Big box",
+              name: "A Big box contains 120 Bottles",
+              quantity:"120",
               price: 230
             }
           }
